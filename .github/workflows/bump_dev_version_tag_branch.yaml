@@ -73,11 +73,11 @@ jobs:
       contents: write
     steps:
 
-      - uses: actions/create-github-app-token@v1
-        id: app-token
-        with:
-          app-id: ${{ inputs.app-id }}
-          private-key: ${{ secrets.private-key }}
+      # - uses: actions/create-github-app-token@v1
+      #   id: app-token
+      #   with:
+      #     app-id: ${{ inputs.app-id }}
+      #     private-key: ${{ secrets.private-key }}
 
       - uses: actions/checkout@v4
         with:
@@ -101,16 +101,16 @@ jobs:
           }
         shell: Rscript {0}
 
-        # - name: Add @*release to Remotes for release version
-        #   shell: bash
-        #   run: |
-        #     PKG_VERSION=$(Rscript -e 'cat(as.character(desc::desc_get_version()))')
-        #     if [[ "$PKG_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-        #       # Add @*release to Remotes for release version
-        #       if grep -q '^Remotes:' DESCRIPTION; then
-        #         awk '/^Remotes:/ {print; next} /^[^ ]/ {exit} {sub(/$/, "@*release"); print}' DESCRIPTION > tmp && mv tmp DESCRIPTION
-        #       fi
-        #     fi
+      - name: Add release to Remotes for release version
+        shell: bash
+        run: |
+            PKG_VERSION=$(Rscript -e 'cat(as.character(desc::desc_get_version()))')
+            if [[ "$PKG_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              # Add @*release to Remotes for release version
+              if grep -q '^Remotes:' DESCRIPTION; then
+                awk '/^Remotes:/ {print; next} /^[^ ]/ {exit} {sub(/$/, "@*release"); print}' DESCRIPTION > tmp && mv tmp DESCRIPTION
+              fi
+            fi
 
       - name: Get package version from DESCRIPTION file and set as environment variable
         run: |
